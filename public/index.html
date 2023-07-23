@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redis API Website</title>
+  <!-- Include Vue.js script -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+</head>
+<body>
+  <div id="app">
+    <h1>Redis API</h1>
+    <div>
+      <input type="text" v-model="key" placeholder="Enter key">
+      <input type="text" v-model="value" placeholder="Enter value">
+      <button @click="setKey">Set Key</button>
+      <button @click="getKey">Get Key</button>
+    </div>
+    <div v-if="result">
+      <h2>Result:</h2>
+      <p>{{ result }}</p>
+    </div>
+  </div>
+
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        key: '',
+        value: '',
+        result: ''
+      },
+      methods: {
+        setKey() {
+          fetch('/api/set', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ key: this.key, value: this.value })
+          })
+          .then(response => response.json())
+          .then(data => {
+            this.result = JSON.stringify(data, null, 2);
+          })
+          .catch(error => {
+            console.error(error);
+            this.result = 'Error occurred.';
+          });
+        },
+        getKey() {
+          fetch(`/api/get/${this.key}`)
+          .then(response => response.json())
+          .then(data => {
+            this.result = JSON.stringify(data, null, 2);
+          })
+          .catch(error => {
+            console.error(error);
+            this.result = 'Error occurred.';
+          });
+        }
+      }
+    });
+  </script>
+</body>
+</html>
